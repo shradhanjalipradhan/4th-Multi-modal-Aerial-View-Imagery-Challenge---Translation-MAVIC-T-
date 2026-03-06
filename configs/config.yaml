@@ -1,0 +1,67 @@
+# ============================================
+# MAVIC-T 2026 Configuration
+# Team: pshradha | Rank: #2
+# ============================================
+
+# Dataset paths (update for your environment)
+data:
+  base_path: "/kaggle/input/datasets/shradhanjali15/mavic-t-design-data"
+  sar_train: "design_data/design_data/SAR/train"
+  eo_train: "design_data/design_data/EO/train"
+  uc_davis: "uc_davis_merged_chips_stacks/uc_davis_merged_chips_stacks"
+  test_path: "mavic_t_2025_test"
+
+# Model architecture
+model:
+  generator:
+    in_channels: 1
+    out_channels: 1
+    base_filters: 64
+    dropout: 0.5        # Applied in first 3 decoder blocks
+    norm: "instance"     # InstanceNorm2d
+
+  discriminator:
+    in_channels: 2       # Concatenated SAR + EO
+    base_filters: 64
+    patch_size: 70       # 70x70 receptive field
+
+# Training
+training:
+  epochs: 5
+  batch_size: 16
+  num_workers: 2
+
+  optimizer:
+    type: "adam"
+    lr_generator: 0.0002
+    lr_discriminator: 0.0001
+    beta1: 0.5
+    beta2: 0.999
+
+  loss:
+    l1_weight: 100.0
+    gan_type: "lsgan"        # Least-squares GAN
+    label_smoothing: 0.9     # Real label value
+
+  scheduler:
+    decay_factor: 0.9
+    decay_after_epoch: 3
+
+  augmentation:
+    horizontal_flip: true
+
+  weight_init:
+    type: "normal"
+    std: 0.02
+
+# Inference
+inference:
+  sar2eo_resolution: 256
+  output_resolution: 256     # Resized from 1024 to avoid scorer OOM
+  checkpoint: "weights/sar2eo_final.pth"
+
+# Output
+output:
+  submission_dir: "submission"
+  checkpoint_dir: "weights"
+  zip_path: "submission.zip"

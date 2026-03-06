@@ -1,0 +1,5 @@
+# Model weights go here after training.
+# Download from: [link to be added]
+# Files:
+#   sar2eo_ep1.pth ... sar2eo_ep5.pth  (per-epoch checkpoints)
+#   sar2eo_final.pth                     (final model)
